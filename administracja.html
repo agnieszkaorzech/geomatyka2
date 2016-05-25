@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+    <title></title>
+
+    <link rel="stylesheet" href="css/kendo.common-material.min.css"/>
+    <link rel="stylesheet" href="css/kendo.material.min.css"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css">
+
+
+    <script src="js/lib/jquery.js"></script>
+    <script src="js/lib/kendo.js"></script>
+    <script src="js/lib/administracja.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.js"></script>
+
+
+</head>
+<body>
+<div>
+    <!-- Container glówne okno-->
+    <div id="oknoGlowne"
+         data-role="window"
+         data-title="Lista użytkowników"
+         data-bind="visible: isVisible"
+         data-width="800"
+         data-height="400"
+         style="padding:0; border: none;"
+         data-actions="[
+                'Minimize',
+                 'Maximize',
+                 'Close',
+                 ]"
+    >
+
+        <div data-role="splitter"
+             data-orientation="vertical"
+             data-panes="[{
+             collapsible: false,
+             resizable: false,
+             size: '30px'
+             },{
+             collapsible: false,
+             resizable: true
+             }]"
+             style="height: 100%; border: none;">
+            <!-- Główny div-->
+            <div style="padding-left:0px;">
+                <!-- Menu główne-->
+                <div class="menuGlowne"
+                     data-role="menu"
+                     data-resizable="true"
+                     data-bind="events: { select: onMenuSelect }"
+                     style="width: 100%; border: none;background-color: lightgray; ">
+                    <li><input class="rola_search"
+                               style="width:150px;"
+                               data-spinners="false"
+                               placeholder="Rola użytkownika"></li>
+                    <li><input class="login_id_search"
+                               style="width:150px;"
+                               data-spinners="false"
+                               placeholder="Loginid"></li>
+                    <li data-menu-id="dodajUzytkownika"
+                        data-content="Dodaj użytkownika"
+                        data-role="tooltip"
+                        data-auto-hide="true"
+                        data-bind="value:"
+                        data-position="top">
+                        <span class="fa fa-plus"></span></li>
+                    <li data-menu-id="edycjauzytkownika"
+                        data-content="Edytuj dane użytkownika"
+                        data-role="tooltip"
+                        data-auto-hide="true"
+                        data-position="top">
+                        <span class="fa fa-pencil-square-o"></span></li>
+                    <li data-menu-id="dodajUprawnienia"
+                        data-content="Dodaj uprawnienia"
+                        data-role="tooltip"
+                        data-auto-hide="true"
+                        data-position="top">
+                        <span class="fa fa-pencil-square-o"></span></li>
+                </div>
+                <div>
+                    <div id="grid"
+                         data-role="grid"
+                         data-sortable="true"
+                         data-pageable='{
+                             "previousNext": true,
+                             "numeric": true,
+                             "pageSizes": true,
+                             "info": true
+                             }'
+                         data-selectable="single row"
+                         data-resizable="true"
+                         data-columns="[
+                             { 'field': 'login', 'width': 50, 'title' : 'Login'},
+                             { 'field': 'naz_druk','width': 50, 'title' : 'Nazwa drukowana', },
+                             { 'field': 'naz_wys','width': 50, 'title' : 'Nazwa wyświetlana' },
+                             { 'field': 'zabl','width': 20, 'title' : 'Zablokowany' },
+                             { 'field': 'arch','width': 20, 'title' : 'Zarchiwizowany'},
+                             { 'field': 'ost_log','width': 50, 'title' : 'Ostatnie logowanie','format': '{0:MM/dd/yyyy}' },
+                             { 'field': 'il_log','width': 20, 'title' : 'Ilość logowań'},
+                             { 'field': 'gen_zap','width': 20, 'title' : 'Wygenerowane zapytania' },
+                             { 'field': 'il_zap', 'width': 20,'title' : 'Ilość zapytań'},]"
+
+                         data-bind="source: products,
+                                    visible:isVisible,
+                                    events:{change:onGridChange,
+                                    save:onSave}"
+                         style="height: 100%; border: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--drugie okno do dodania użytkownika-->
+        <div id="window2"
+             data-bind="visible: notVisible"
+             data-role="window"
+             data-title="Dodaj użytkownika"
+             data-width="200"
+             data-height="430"
+             data-resizable="false"
+             data-actions="[
+                'Minimize',
+                'Close',
+                 ]"
+             style="padding:0; border: none;background-color: lightgray;">
+            <div style="margin-left: 20px;">
+                <form>
+                    <header>&nbsp;&nbsp;Rejestracja</header>
+                    <input type="text" name="loginU" placeholder="Login"
+                           data-bind="value: loginU"/><br/>
+                    <input type="text" name="haslo" placeholder="Hasło"
+                           data-bind="value: haslo"/><br/>
+                    <input type="text" name="repetH" placeholder="Powtórz hasło"
+                           data-bind="value: repetH"/><br/>
+
+                    <header>&nbsp;&nbsp;Dane osobowe</header>
+                    <input type="text" name="imie" placeholder="Imię"
+                           data-bind="value: imie"/><br/>
+                    <input type="text" name="nazwisko" placeholder="Nazwisko"
+                           data-bind="value: nazwisko"/><br/>
+                    <input type="text" name="secondI" placeholder="Drugie imię"
+                           data-bind="value: secondI"/><br/>
+
+                    <input type="text" name="imieo" placeholder="Imię ojca"
+                           data-bind="value: imieo"/><br/>
+                    <input type="text" name="imiem" placeholder="Imię matki"
+                           data-bind="value: imiem"/><br/>
+                    <input type="text" name="pesel" placeholder="PESEL"
+                           data-bind="value: pesel"/><br/>
+
+                    <input type="text" name="ulica" placeholder="Ulica"
+                           data-bind="value: ulica"/><br/>
+                    <input type="text" name="nrdomu" placeholder="Numer domu"
+                           data-bind="value: nrdomu"/><br/>
+                    <input type="text" name="miejsc" placeholder="Miejscowość"
+                           data-bind="value: miejsc"/><br/>
+
+                    <input type="text" name="kodp" placeholder="Kod pocztowy"
+                           data-bind="value: kodp"/><br/>
+                    <input type="text" name="poczta" placeholder="Poczta"
+                           data-bind="value: poczta"/><br/>
+                    <input type="text" name="opis" placeholder="Opis"
+                           data-bind="value: opis"/><br/>
+                    <input type="text" name="email" placeholder="Email"
+                           data-bind="value: email"/><br/>
+
+                    <button id="add" data-bind="click: addItem">Dodaj</button>
+                </form>
+            </div>
+        </div>
+        <!--okno do wyświetlania uprawnień-->
+        <div id="window3"
+             data-bind="visible: notVisible"
+             data-role="window"
+             data-title="Dodaj uprawnienia "
+             data-width="650"
+             data-height="430"
+             data-resizable="false"
+             data-actions="[
+                'Minimize',
+                'Close',
+                 ]"
+             style="padding:0; border: none;background-color: lightgray;">
+            <div>
+                <div>
+                    <div id="treeview-left"
+                         style="width:40%;height:400px;float:left;
+                     ">
+                    </div>
+                    <div id="detailUprawnienia"
+                         style="width:60%;height:430px;float:right;">
+                        <div id="uprawnieniaList"></div>
+                    </div>
+                </div>
+                <div>
+                    <button type="button" id="clickme"
+                            style="color: #fff; background-color:#989898;">ZAPISZ ZMIANY
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="window4"
+             data-bind="visible: isVisible"
+             data-role="window"
+             data-title="Edytuj dane użytkownika "
+             data-width="650"
+             data-height="430"
+             data-resizable="false"
+             data-actions="[
+                'Minimize',
+                'Close',
+                 ]"
+             style="padding:0; border: none;background-color: lightgray;">
+            <div id="grid2"
+                 data-role="grid"
+                 data-columns="[
+                             { 'field': 'login', 'width': 50, 'title' : 'Login'},
+                             { 'field': 'naz_druk','width': 50, 'title' : 'Nazwa drukowana', },
+                             { 'field': 'naz_wys','width': 50, 'title' : 'Nazwa wyświetlana' },
+                             { 'field': 'zabl','width': 20, 'title' : 'Zablokowany' },
+                             { 'field': 'arch','width': 20, 'title' : 'Zarchiwizowany'},
+                             { 'field': 'ost_log','width': 50, 'title' : 'Ostatnie logowanie','format': '{0:MM/dd/yyyy}' },
+                             { 'field': 'il_log','width': 20, 'title' : 'Ilość logowań'},
+                             { 'field': 'gen_zap','width': 20, 'title' : 'Wygenerowane zapytania' },
+                             { 'field': 'il_zap', 'width': 20,'title' : 'Ilość zapytań'},]"
+
+                 data-bind="source: products2,
+                                   visible:isVisible,
+                                   events:{
+                                   save:onSave}"
+                 style="height: 100%; border: none;">>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+</body>
+</html>
